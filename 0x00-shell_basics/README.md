@@ -1,1 +1,1 @@
-Display current directory contents.Long format with user and group IDs displayed numerically And hidden files (starting with .)
+Delete the file betty.The file betty is in /tmp/my_first_directory
