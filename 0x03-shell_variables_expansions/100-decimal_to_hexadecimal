@@ -1,2 +1,2 @@
 #!/bin/bash
-echo hexString=$DECIMAL.toString(16); \n
+echo hexString=$DECIMAL.toString(16);
