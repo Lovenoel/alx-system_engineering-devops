@@ -1,2 +1,2 @@
 #!/bin/bash
-printf "> %d <\n" $DECIMAL
+echo hexString=$DECIMAL.toString(16); \n
