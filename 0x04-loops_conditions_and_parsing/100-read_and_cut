@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# This script displays specific information from /etc/passwd
+# using read and cut
+
+while IFS=':' read -r username x uid gid gecos home shell; do
+  echo "$username:$uid:$home"
+done < /etc/passwd

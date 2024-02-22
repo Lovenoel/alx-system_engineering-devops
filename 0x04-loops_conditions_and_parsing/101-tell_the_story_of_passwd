@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Tells a story based on /etc/passwd using while loop + IFS
+
+while IFS=':' read -r u x uid gid gecos h s; do
+  echo "The user $u is part of the $gid gang, lives in $h and rides $s."
+  echo "$uid's place is protected by the passcode $x, more info about the user: $gecos"
+done < /etc/passwd
+

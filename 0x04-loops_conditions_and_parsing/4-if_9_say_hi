@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This script is displaying "Best School" 10 times,
+# saying "Hi" on the 9th iteration
+
+for ((i = 0; i < 10; i++)); do
+  if [ $i -eq 8 ]; then
+    echo "Hi"
+  else
+    echo "Best School"
+  fi
+done
