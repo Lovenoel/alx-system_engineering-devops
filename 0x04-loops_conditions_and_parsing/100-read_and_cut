@@ -3,5 +3,5 @@
 # using read and cut
 
 while IFS=':' read -r username x uid gid gecos home shell; do
-  echo "$username:$uid:$home"
-done < /etc/passwd
+	echo "$username:$uid:$home"
+done

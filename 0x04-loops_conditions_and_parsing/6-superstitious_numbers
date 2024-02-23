@@ -2,19 +2,26 @@
 # This script displays numbers from 1 to 20 with special
 # messages on certain iterations
 
-for ((i = 1; i <= 20; i++)); do
-  case $i in
-    4)
-      echo "$i: bad luck from China"
-      ;;
-    9)
-      echo "$i: bad luck from Japan"
-      ;;
-    17)
-      echo "$i: bad luck from Italy"
-      ;;
-    *)
-      echo $i
-      ;;
-  esac
+count=1
+
+while [ $count -le 20 ]; do
+    case $count in
+        4)
+            echo $count
+            echo "bad luck from China"
+            ;;
+        9)
+            echo $count
+            echo "bad luck from Japan"
+            ;;
+        17)
+            echo $count
+            echo "bad luck from Italy"
+            ;;
+        *)
+            echo $count
+            ;;
+    esac
+
+    ((count++))
 done
