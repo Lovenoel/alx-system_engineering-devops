@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Kills the 7-highlander process using the PID obtained from pgrep
+pid=$(pgrep 7-highlander)
+kill -15 "$pid"

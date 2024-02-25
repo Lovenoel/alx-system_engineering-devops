@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Creates a PID file, displays "To infinity and beyond" indefinitely, and deletes the PID file on receiving a SIGTERM or SIGQUIT signal
+pid_file="/var/run/myscript.pid"
+
+trap 'rm -f "$pid_file"; exit' SIGTERM SIGQUIT
+
+echo $$ > "$pid_file"
+while true; do
+	echo "To infinity and beyond"
+	sleep 2
+done

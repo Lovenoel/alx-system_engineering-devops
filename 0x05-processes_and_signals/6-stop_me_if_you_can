@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Stops the 4-to_infinity_and_beyond process using the PID obtained from pgrep
+pid=$(pgrep 4-to_infinity_and_beyond)
+kill -15 "$pid"
