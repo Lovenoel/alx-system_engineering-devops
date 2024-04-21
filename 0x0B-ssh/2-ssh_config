@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Configures a local SSH client to connect to server without typing a password
+Host *
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
