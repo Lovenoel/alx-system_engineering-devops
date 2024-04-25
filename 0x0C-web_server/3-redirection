@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# redirection
+
+# Install nginx with the -y flag to automatically confirm installation prompts
+apt-get update
+apt-get install -y nginx
+
+# Ensure nginx is listening on port 80 by modifying its default configuration
+sed -i 's/listen 80 default_server;/listen 80;/g' /etc/nginx/sites-available/default
+
+# Restart nginx
+service nginx restart
+
+# Create a custom configuration file for redirection
+cat << EOF > /etc/nginx/sites-available/redirect_me
+server {
+    listen 80;
+    server_name _;
+
+    location /redirect_me {
+        return 301 https://www.example.com/;
+    }
+
+    # Include generic Nginx configuration
+    include /etc/nginx/nginx.conf;
+}
+EOF
+
+# Enable the new configuration
+ln -s /etc/nginx/sites-available/redirect_me /etc/nginx/sites-enabled/
+
+# Test Nginx configuration for syntax errors
+nginx -t
+
+# If syntax is okay, reload Nginx to apply changes
+if [ $? -eq 0 ]; then
+    service nginx reload
+    echo "Nginx configuration reloaded successfully."
+else
+    echo "Nginx configuration test failed. Check for syntax errors."
+fi
+
