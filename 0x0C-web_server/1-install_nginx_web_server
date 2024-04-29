@@ -1,25 +1,43 @@
 #!/usr/bin/env bash
 #Installs nginx and configures a new Ubuntu machine to listen at port 80
 
-# Install nginx with the -y flag to automatically confirm installation prompts
+# Update package index
 apt-get update
-apt-get install -y nginx
 
-# Ensure nginx is listening on port 80 by modifying its default configuration
-sed -i 's/listen 80 default_server;/listen 80;/g' /etc/nginx/sites-available/default
+# Install nginx
+if apt-get -y install nginx; then
+    echo "Nginx installed successfully."
+else
+    echo "Failed to install Nginx. Exiting."
+    exit 1
+fi
+
+# Configure nginx to listen on port 80
+cat > /etc/nginx/sites-available/default <<EOF
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOF
 
 # Restart nginx
 service nginx restart
 
-# Create a default HTML page containing "Hello World!"
-echo "<!DOCTYPE html><html><head><title>Hello World!</title></head><body>Hello World!</body></html>" > /var/www/html/index.html
-
-# Check if nginx is serving the "Hello World!" page by querying it with curl
-curl_output=$(curl -s http://localhost)
-
-# Verify if curl output contains "Hello World!"
-if [[ "$curl_output" == *"Hello World!"* ]]; then
-    echo "Nginx is successfully serving the 'Hello World!' page."
+# Check if nginx restarted successfully
+if service nginx status | grep -q "active (running)"; then
+    echo "Nginx restarted successfully."
 else
-    echo "Nginx is not serving the 'Hello World!' page."
+    echo "Failed to restart Nginx. Exiting."
+    exit 1
 fi
+
+echo "Configuration completed successfully."
