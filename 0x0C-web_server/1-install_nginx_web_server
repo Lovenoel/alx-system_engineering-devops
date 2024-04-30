@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-#Installs nginx and configures a new Ubuntu machine to listen at port 80
 
-# Install nginx with automatic yes (-y) option
-sudo apt-get update
-sudo apt-get -y install nginx
+# Update package index
+sudo apt-get update -y
 
-# Configure nginx to listen on port 80 and return "Hello World!" only for the root URL
+# Install nginx
+sudo apt-get install nginx -y
+
+# Configure nginx to listen on port 80
 echo 'server {
         listen 80 default_server;
         listen [::]:80 default_server;
@@ -16,28 +17,10 @@ echo 'server {
         server_name _;
 
         location / {
-                return 404;
+                return 200 "Hello World!\n";
         }
-
-        location = / {
-                echo "Hello World!";
-        }
-}' | sudo tee /etc/nginx/sites-available/default >/dev/null
-
-# Set up firewall to allow HTTP traffic
-sudo ufw allow 'Nginx HTTP'
-
-# Set ownership and permissions for website files
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www/html
-
-# Backup default index
-sudo cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
-
-# Create new index with "Hello World!" content
-echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html >/dev/null
+}' | sudo tee /etc/nginx/sites-available/default > /dev/null
 
 # Restart nginx without systemctl
 sudo kill -s HUP $(cat /var/run/nginx.pid)
 
-# End of script
