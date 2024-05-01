@@ -1,42 +1,31 @@
 #!/usr/bin/env bash
-# redirection
+# Configures a new ubuntu machine by installing Nginx where it should be
+# listening on port 80 Serve a page that would return a Hello World string
 
-# Install nginx with the -y flag to automatically confirm installation prompts
-apt-get update
-apt-get install -y nginx
+echo -e "Updates and installs Nginx.\n"
+sudo apt-get update -y -qq && sudo apt-get install nginx -y
 
-# Ensure nginx is listening on port 80 by modifying its default configuration
-sed -i 's/listen 80 default_server;/listen 80;/g' /etc/nginx/sites-available/default
+# starts nginx service
+sudo service nginx start
 
-# Restart nginx
-service nginx restart
+# allows nginx on the firewall
+sudo ufw allow 'Nginx HTTP'
 
-# Create a custom configuration file for redirection
-cat << EOF > /etc/nginx/sites-available/redirect_me
-server {
-    listen 80;
-    server_name _;
+# Gives the user ownership to website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
 
-    location /redirect_me {
-        return 301 https://www.example.com/;
-    }
+# Backsup default index
+cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
 
-    # Include generic Nginx configuration
-    include /etc/nginx/nginx.conf;
-}
-EOF
+# Creating new index
+echo -e "Hello World!" | dd status=none of=/var/www/html/index.nginx-debian.html
 
-# Enable the new configuration
-ln -s /etc/nginx/sites-available/redirect_me /etc/nginx/sites-enabled/
+# Setting up /redirect_me to a youtube video
+sudo sed -i '24i\       rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
 
-# Test Nginx configuration for syntax errors
-nginx -t
 
-# If syntax is okay, reload Nginx to apply changes
-if [ $? -eq 0 ]; then
-    service nginx reload
-    echo "Nginx configuration reloaded successfully."
-else
-    echo "Nginx configuration test failed. Check for syntax errors."
-fi
+# Restarting nginx
+sudo service nginx restart
 
+echo -e "\nUpdate and Installation of Nginx Completed. ✅ \n"
