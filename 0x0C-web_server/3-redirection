@@ -1,9 +1,28 @@
 #!/usr/bin/env bash
+# Configures a new Ubuntu machine by installing Nginx where it should be
+# listening on port 80. Serves a page that would return a Hello World string.
 
-# Update package lists and install Nginx
+echo -e "Updating and installing Nginx.\n"
 sudo apt-get update -y -qq && sudo apt-get install nginx -y
 
-# Configure redirection in Nginx
+# Start nginx service
+sudo service nginx start
+
+# Allow nginx on the firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Give the user ownership of website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Backup default index with timestamp
+backup_file="/var/www/html/index.nginx-debian.html.bckp.$(date +%Y%m%d%H%M%S)"
+cp /var/www/html/index.nginx-debian.html "$backup_file"
+
+# Create new index file with "Hello World!"
+echo -e "Hello World!" | sudo dd status=none of=/var/www/html/index.nginx-debian.html
+
+# Configure redirection to YouTube video
 sudo bash -c 'cat <<EOF > /etc/nginx/sites-available/default
 server {
     listen 80 default_server;
@@ -11,14 +30,14 @@ server {
     server_name _;
 
     location /redirect_me {
-        return 301 https://www.w3schools.com/python/python_intro.asp;
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
     }
 
     # other server configuration...
 }
 EOF'
 
-# Restart Nginx to apply changes
+# Restart nginx
 sudo service nginx restart
 
-echo "Nginx redirection configured successfully."
+echo -e "\nUpdate and installation of Nginx completed. ✅ \n"
