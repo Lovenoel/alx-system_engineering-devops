@@ -34,15 +34,17 @@ server {
     }
 
     # other server configuration...
-    location / {
+    location /xyz {
         try_files $uri $uri/ =404;
+    }
+    location /xyzfoo {
         error_page 404 /error_404.html;
     }
 }
 EOF'
 
 # Create custom 404 page
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/error_404.html
+echo "Ceci n'est pas une page" >> /var/www/html/error_404.html
 
 # Restart nginx
 sudo service nginx restart
