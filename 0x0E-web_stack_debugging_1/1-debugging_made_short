@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+service nginx stop 2>/dev/null
+! command -v nginx >/dev/null || netstat -tuln | grep ':80' >/dev/null || (sed -i 's/\(listen[[:space:]]\+\)80;/\180;/' /etc/nginx/sites-available/default && service nginx restart)
+netstat -tuln | grep ':80' >/dev/null && echo "Nginx is now listening on port 80" || exit 1
