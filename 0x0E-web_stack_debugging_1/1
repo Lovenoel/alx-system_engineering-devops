@@ -1,0 +1,4 @@
+Nginx is already installed.
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN     
+tcp6       0      0 :::80                   :::*                    LISTEN     
+Nginx is already listening on port 80
