@@ -1,50 +1,19 @@
 #!/usr/bin/env bash
-# prints domains and subdomains
+# print domains and subdomains
 
-# Function to display information about a subdomain
+# prints subdomains DNS details
 print_domain_subdomain () {
-    local domain="$1"
-    local subdomain="$2"
-
-    # Perform DNS query for the subdomain
-    local dns_output=$(dig +short "$subdomain.$domain")
-
-    # Check if the output contains an IP address
-    if [[ $dns_output =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        # If it's an IP address, assume it's an "A" record
-        local record_type="A"
-        local destination="$dns_output"
-    else
-        # Otherwise, assume it's another type of record
-        local record_type=$(echo "$dns_output" | awk '{print $2}')
-        local destination=$(echo "$dns_output" | awk '{print $1}')
-    fi
-
-    # Output the information
-    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
 }
 
-# Main script
-main() {
-    local domain="$1"
-    local subdomain="$2"
-
-    # Check if both domain and subdomain are provided
-    if [ "$#" -eq 2 ]; then
-        print_domain_subdomain "$domain" "$subdomain"
-    else
-        # Display information for default subdomains
-        print_domain_subdomain "$domain" "www"
-        print_domain_subdomain "$domain" "lb-01"
-        print_domain_subdomain "$domain" "web-01"
-        print_domain_subdomain "$domain" "web-02"
-    fi
-}
-
-# Check for arguments
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <domain> [subdomain]"
-    exit 1
+# determines which subdomains to query for DNS information based on
+# the number of arguments passed to the script
+if [ "$#" -eq 2 ]
+then
+    print_domain_subdomain "$2.$1" "$2"
+else
+    print_domain_subdomain "www.$1" "www"
+    print_domain_subdomain "lb-01.$1" "lb-01"
+    print_domain_subdomain "web-01.$1" "web-01"
+    print_domain_subdomain "web-02.$1" "web-02"
 fi
-
-main "$@"
