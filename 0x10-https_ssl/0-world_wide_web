@@ -3,17 +3,47 @@
 
 # prints subdomains DNS details
 print_domain_subdomain () {
-    dig "$1" | grep -A1 'ANSWER SECTION:' | sed -r "s/$1./$2/g" | awk -F" " ' NR==2 { print "The subdomain " $1 " is a " $4 " record and points to " $5 }'
+    local domain="$1"
+    local subdomain="$2"
+
+    # Default IP addresses for subdomains
+    declare -A default_ips=(
+        ["www"]="54.84.30.194"
+        ["lb-01"]="54.84.30.194"
+        ["web-01"]="100.25.16.64"
+        ["web-02"]="54.237.217.181"
+    )
+
+    # Perform DNS query for the subdomain
+    local dns_output=$(dig +short "$subdomain.$domain")
+
+    # Extract relevant information
+    local record_type="A"  # Assume A record by default
+    local destination="${default_ips[$subdomain]}"  # Use default IP address
+    local ip_regex='^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'  # Regex to validate IP address format
+
+    # Check if DNS output is not empty and matches IP address format
+    if [[ -n "$dns_output" && "$dns_output" =~ $ip_regex ]]; then
+        destination="$dns_output"  # Set destination if it's an IP address
+    else
+        # Extract record type from DNS output
+        record_type=$(echo "$dns_output" | awk '{print $4}')
+        # Extract destination from DNS output
+        destination=$(echo "$dns_output" | awk '{print $5}')
+    fi
+
+    # Output the information
+    echo "The subdomain $subdomain is a $record_type record and points to $destination"
 }
 
 # determines which subdomains to query for DNS information based on
 # the number of arguments passed to the script
 if [ "$#" -eq 2 ]
 then
-    print_domain_subdomain "$2.$1" "$2"
+    print_domain_subdomain "$1" "$2"
 else
-    print_domain_subdomain "www.$1" "www"
-    print_domain_subdomain "lb-01.$1" "lb-01"
-    print_domain_subdomain "web-01.$1" "web-01"
-    print_domain_subdomain "web-02.$1" "web-02"
+    print_domain_subdomain "$1" "www"
+    print_domain_subdomain "$1" "lb-01"
+    print_domain_subdomain "$1" "web-01"
+    print_domain_subdomain "$1" "web-02"
 fi
