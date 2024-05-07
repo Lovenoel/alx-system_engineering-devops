@@ -9,9 +9,16 @@ print_domain_subdomain () {
     # Perform DNS query for the subdomain
     local dns_output=$(dig +short "$subdomain.$domain")
 
-    # Extract relevant information using awk
-    local record_type=$(echo "$dns_output" | awk '{print $2}')
-    local destination=$(echo "$dns_output" | awk '{print $1}')
+    # Check if the output contains an IP address
+    if [[ $dns_output =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        # If it's an IP address, assume it's an "A" record
+        local record_type="A"
+        local destination="$dns_output"
+    else
+        # Otherwise, assume it's another type of record
+        local record_type=$(echo "$dns_output" | awk '{print $2}')
+        local destination=$(echo "$dns_output" | awk '{print $1}')
+    fi
 
     # Output the information
     echo "The subdomain $subdomain is a $record_type record and points to $destination"
@@ -20,17 +27,23 @@ print_domain_subdomain () {
 # Main script
 main() {
     local domain="$1"
+    local subdomain="$2"
 
-    # Display information for default subdomains
-    print_domain_subdomain "$domain" "www"
-    print_domain_subdomain "$domain" "lb-01"
-    print_domain_subdomain "$domain" "web-01"
-    print_domain_subdomain "$domain" "web-02"
+    # Check if both domain and subdomain are provided
+    if [ "$#" -eq 2 ]; then
+        print_domain_subdomain "$domain" "$subdomain"
+    else
+        # Display information for default subdomains
+        print_domain_subdomain "$domain" "www"
+        print_domain_subdomain "$domain" "lb-01"
+        print_domain_subdomain "$domain" "web-01"
+        print_domain_subdomain "$domain" "web-02"
+    fi
 }
 
 # Check for arguments
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <domain>"
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <domain> [subdomain]"
     exit 1
 fi
 
