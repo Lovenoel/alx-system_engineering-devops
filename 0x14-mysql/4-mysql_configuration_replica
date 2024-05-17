@@ -21,5 +21,5 @@ MASTER_PASSWORD = 'kinglovenoel@1'
 # MASTER_PORT should be the MySQL port on the primary server (usually 3306)
 MASTER_PORT	= '3306'
 # MASTER_LOG_FILE and MASTER_LOG_POS should be obtained from the primary server using SHOW MASTER STATUS command
-MASTER_LOG_FILE = 'mysql-bin.000002'
+MASTER_LOG_FILE = 'mysql-bin.000001'
 MASTER_LOG_POS 	= '154'
