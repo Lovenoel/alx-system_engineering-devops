@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#  MySQL replica configuration on web-02 to replicate 
+
+[mysqld]
+# Set a unique server ID
+server-id	= 2
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
+datadir         = /var/lib/mysql
+log-error       = /var/log/mysql/error.log
+# By default we only accept connections from localhost
+#bind-address   = 127.0.0.1
+
+# Configure replication parameters
+# MASTER_HOST should be the IP address or hostname of the primary server
+MASTER_HOST	= '100.25.16.64'
+# MASTER_USER should be the replication user name
+MASTER_USER	= 'replica_user'
+# MASTER_PASSWORD should be the replication user password
+MASTER_PASSWORD = 'kinglovenoel@1'
+# MASTER_PORT should be the MySQL port on the primary server (usually 3306)
+MASTER_PORT	= '3306'
+# MASTER_LOG_FILE and MASTER_LOG_POS should be obtained from the primary server using SHOW MASTER STATUS command
+MASTER_LOG_FILE = 'mysql-bin.000002'
+MASTER_LOG_POS 	= '154'
