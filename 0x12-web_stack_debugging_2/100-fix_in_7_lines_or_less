@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+id -u nginx &>/dev/null || useradd -r nginx
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+sed -i 's/listen 80;/listen 8080;/' /etc/nginx/sites-available/default
+chown -R nginx:nginx /var/lib/nginx /var/log/nginx
+service nginx restart
