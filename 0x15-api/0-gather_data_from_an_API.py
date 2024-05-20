@@ -2,51 +2,59 @@
 # Python script that uses a REST API for a given employee ID, returns
 # information about his/her TODO list progress.
 
-import requests
-import sys
+import requests  # Importing requests module for making HTTP requests
+import sys  # Importing sys module for system-specific parameters and functions
+
 
 def get_employee_todo_progress(employee_id):
     # Base URL for the API
     base_url = 'https://jsonplaceholder.typicode.com'
-    
-    # Get user info
-    user_response = requests.get(f'{base_url}/users/{employee_id}')
-    if user_response.status_code != 200:
-        print("Error fetching user data")
-        return
 
+    # Get user info
+    # Sending a GET request to fetch user data
+    user_response = requests.get(f'{base_url}/users/{employee_id}')
+    # Checking if the request was successful
+    if user_response.status_code != 200:
+        # Print error message if request failed
+        print("Error fetching user data")
+        return  # Exit function
+
+    # Parsing JSON response into Python dictionary
     user_data = user_response.json()
+    # Extracting employee name from user data
     employee_name = user_data.get('name')
 
     # Get todo list for the user
-    todos_response = requests.get(f'{base_url}/todos', params={'userId': employee_id})
+    # Sending GET request to fetch todos for the user
+    todos_response = requests.get(f'{base_url}/todos',
+            params={'userId': employee_id})
+    # Checking if the request was successful
     if todos_response.status_code != 200:
-        print("Error fetching todos")
-        return
-
+        print("Error fetching todos")  # Print error message if request failed
+        return  # Exit function
+    # Parsing JSON response into Python dictionary
     todos = todos_response.json()
 
     # Calculate number of completed and total tasks
-    total_tasks = len(todos)
+    total_tasks = len(todos)  # Total number of tasks
+    # Filtering completed tasks
     completed_tasks = [todo for todo in todos if todo.get('completed')]
-    number_of_done_tasks = len(completed_tasks)
+    number_of_done_tasks = len(completed_tasks)  # Number of completed tasks
 
     # Print the progress
-    print(f"Employee {employee_name} is done with tasks({number_of_done_tasks}/{total_tasks}):")
+    print(f"Employee {employee_name} is done with tasks{number_of_done_tasks}/{total_tasks}):")
 
     # Print the titles of completed tasks
     for task in completed_tasks:
-        print(f"\t {task.get('title')}")
-
+        print(f"\t {task.get('title')}")  # Print title of each completed task
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python3 0-gather_data_from_an_API.py <employee_id>")
-        sys.exit(1)
-
+        sys.exit(1)  # Exit the script with error code 1
     try:
         employee_id = int(sys.argv[1])
     except ValueError:
         print("Employee ID must be an integer")
-        sys.exit(1)
+        sys.exit(1)  # Exit the script with error code 1
 
     get_employee_todo_progress(employee_id)
