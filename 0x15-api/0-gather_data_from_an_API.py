@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-# Python script that uses a REST API for a given employee ID, returns
-# information about his/her TODO list progress.
+# Python script that returns an employee's TODO list using a REST API
 
 import requests  # Importing requests module for making HTTP requests
 import sys  # Importing sys module for system-specific parameters and functions
@@ -26,14 +25,13 @@ def get_employee_todo_progress(employee_id):
 
     # Get todo list for the user
     # Sending GET request to fetch todos for the user
-    todos_response = requests.get(f'{base_url}/todos',
-            params={'userId': employee_id})
+    todoUs = requests.get(f'{base_url}/todos', params={'userId': employee_id})
     # Checking if the request was successful
-    if todos_response.status_code != 200:
+    if todoUs.status_code != 200:
         print("Error fetching todos")  # Print error message if request failed
         return  # Exit function
     # Parsing JSON response into Python dictionary
-    todos = todos_response.json()
+    todos = todoUs.json()
 
     # Calculate number of completed and total tasks
     total_tasks = len(todos)  # Total number of tasks
@@ -47,6 +45,8 @@ def get_employee_todo_progress(employee_id):
     # Print the titles of completed tasks
     for task in completed_tasks:
         print(f"\t {task.get('title')}")  # Print title of each completed task
+
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python3 0-gather_data_from_an_API.py <employee_id>")
