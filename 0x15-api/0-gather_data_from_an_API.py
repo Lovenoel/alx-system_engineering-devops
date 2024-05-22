@@ -9,7 +9,6 @@ and prints the number of completed tasks and their titles for a given employee.
 import requests  # Importing requests module for making HTTP requests
 import sys  # Importing sys module for system-specific parameters and functions
 
-
 def get_employee_todo_progress(employee_id):
     """
     Fetch and display the TODO list progress of an employee.
@@ -54,12 +53,12 @@ def get_employee_todo_progress(employee_id):
     number_of_done_tasks = len(completed_tasks)  # Number of completed tasks
 
     # Print the progress
-    print(f"Employee {employee_name} is done with tasks "
+    print(f"Employee {employee_name} is done with tasks"
           f"({number_of_done_tasks}/{total_tasks}):")
 
     # Print the titles of completed tasks
     for task in completed_tasks:
-        print(f"\t{task.get('title')}")
+        print(f"\t {task.get('title')}")  # Print title of each completed task
 
 
 if __name__ == '__main__':
