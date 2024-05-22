@@ -38,13 +38,13 @@ def get_employee_todo_progress(employee_id):
 
     # Get todo list for the user
     # Sending GET request to fetch todos for the user
-    todoUs = requests.get(f'{base_url}/todos', params={'userId': employee_id})
+    todos_response = requests.get(f'{base_url}/todos', params={'userId': employee_id})
     # Checking if the request was successful
-    if todoUs.status_code != 200:
+    if todos_response.status_code != 200:
         print("Error fetching todos")  # Print error message if request failed
         return  # Exit function
     # Parsing JSON response into Python dictionary
-    todos = todoUs.json()
+    todos = todos_response.json()
 
     # Calculate number of completed and total tasks
     total_tasks = len(todos)  # Total number of tasks
@@ -58,8 +58,7 @@ def get_employee_todo_progress(employee_id):
 
     # Print the titles of completed tasks
     for task in completed_tasks:
-        print(f"\t {task.get('title')}")  # Print title of each completed task
-
+        print(f"\t {task.get('title')}")  # Print title of each completed task with 5 spaces
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
