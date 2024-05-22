@@ -54,8 +54,8 @@ def get_employee_todo_progress(employee_id):
     number_of_done_tasks = len(completed_tasks)  # Number of completed tasks
 
     # Print the progress
-    print(f"Employee {employee_name} is done with tasks"
-        f"({number_of_done_tasks}/{total_tasks}):")
+    print(f"Employee {employee_name} is done with tasks "
+          f"({number_of_done_tasks}/{total_tasks}):")
 
     # Print the titles of completed tasks
     for task in completed_tasks:
@@ -73,4 +73,3 @@ if __name__ == '__main__':
         sys.exit(1)  # Exit the script with error code 1
 
     get_employee_todo_progress(employee_id)
-
