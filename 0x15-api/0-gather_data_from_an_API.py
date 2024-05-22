@@ -1,11 +1,25 @@
 #!/usr/bin/python3
-# Python script that returns an employee's TODO list using a REST API
+"""
+Python script that returns an employee's TODO list using a REST API.
+
+This script fetches user data and their TODO list from the JSONPlaceholder API
+and prints the number of completed tasks and their titles for a given employee.
+"""
 
 import requests  # Importing requests module for making HTTP requests
 import sys  # Importing sys module for system-specific parameters and functions
 
 
 def get_employee_todo_progress(employee_id):
+    """
+    Fetch and display the TODO list progress of an employee.
+
+    Args:
+        employee_id (int): The ID of the employee.
+
+    Returns:
+        None
+    """
     # Base URL for the API
     base_url = 'https://jsonplaceholder.typicode.com'
 
@@ -40,7 +54,8 @@ def get_employee_todo_progress(employee_id):
     number_of_done_tasks = len(completed_tasks)  # Number of completed tasks
 
     # Print the progress
-    print(f"Employee {employee_name} is done with tasks{number_of_done_tasks}/{total_tasks}):")
+    print(f"Employee {employee_name} is done with tasks "
+          f"({number_of_done_tasks}/{total_tasks}):")
 
     # Print the titles of completed tasks
     for task in completed_tasks:
