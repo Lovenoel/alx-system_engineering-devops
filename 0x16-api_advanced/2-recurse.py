@@ -12,11 +12,15 @@ def recurse(subreddit, hot_list=[], after=None):
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {'User-Agent': 'MyUserAgent/0.0.1'}
     params = {'after': after} if after else {}
-    response = requests.get(url, headers=headers, params=params, allow_redirects=False)
+    response = requests.get(
+            url,
+            headers=headers,
+            params=params,
+            allow_redirects=False)
 
     if response.status_code != 200:
         return None
-    
+
     data = response.json()
     children = data.get('data', {}).get('children', [])
     for child in children:
