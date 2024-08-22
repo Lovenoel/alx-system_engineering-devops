@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# script to set up Gunicorn and Nginx for a Flask application
+
+# Check if Nginx is installed
+if ! dpkg -l | grep -q nginx; then
+    echo -e "Installing Nginx.\n"
+    sudo apt-get update -y
+    sudo apt-get install -y nginx
+else
+    echo -e "Nginx is already installed.\n"
+fi
+
+# Check if pip3 is installed
+if ! command -v pip3 &> /dev/null; then
+    echo -e "Installing pip3.\n"
+    sudo apt-get install -y python3-pip
+else
+    echo -e "pip3 is already installed.\n"
+fi
+
+# Install Gunicorn
+echo -e "Installing Gunicorn.\n"
+pip3 install gunicorn
+
+# Set up the Flask application and Gunicorn
+echo -e "Setting up Flask application with Gunicorn.\n"
+# Example Flask application setup (adjust this as needed)
+echo -e "
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route('/airbnb-onepage/')
+def hello():
+	return 'Hello HBNB!'
+" > app.py
+
+# Create a Gunicorn service file
+echo -e "Creating Gunicorn service file.\n"
+sudo tee /etc/systemd/system/gunicorn.service > /dev/null <<EOL
+[Unit]
+Description=gunicorn daemon for Flask application
+After=network.target
+
+[Service]
+User=$USER
+Group=www-data
+WorkingDirectory=/home/$USER
+ExecStart=/usr/local/bin/gunicorn --workers 3 --bind 0.0.0.0:5000 web_flask.0-hello_route:app
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+# Start and enable Gunicorn service
+echo -e "Starting and enabling Gunicorn service.\n"
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+
+# Configure Nginx
+echo -e "Configuring Nginx.\n"
+sudo tee /etc/nginx/sites-available/2-app_server-nginx_config > /dev/null <<EOL
+server {
+    listen 80;
+    server_name 54.227.128.57;
+
+    location /airbnb-onepage/ {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}
+EOL
+
+# Enable Nginx configuration
+echo -e "Enabling Nginx configuration.\n"
+sudo ln -s /etc/nginx/sites-available/2-app_server-nginx_config /etc/nginx/sites-enabled/
+
+# Test Nginx configuration
+echo -e "Testing Nginx configuration.\n"
+sudo nginx -t
+
+# Restart Nginx
+echo -e "Restarting Nginx.\n"
+sudo systemctl restart nginx
+
+# Allow Nginx through the firewall
+echo -e "Allowing Nginx through the firewall.\n"
+sudo ufw allow 'Nginx HTTP'
+
+echo -e "\nSetup complete."
+
